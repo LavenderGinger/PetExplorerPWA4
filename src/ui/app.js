@@ -146,5 +146,5 @@ function displayPet(pet) {
 }
 
 function deletePet(pet) {
-  notifyUser('YOU ANIMAL!!! I won\'t delete the beloved pet ' + pet.name + ', got it? Now GO AWAY!');
+  notifyUser('YOU ANIMAL!!! I won\'t delete the beloved pet ' + pet + ', got it? Now GO AWAY!');
 }
