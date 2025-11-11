@@ -89,28 +89,19 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 export async function loadPets() {
-  const db = await getDB();
   const petContainer = document.querySelector(".petcoll");
   petContainer.innerHTML = "<div class=\"card-panel white row valign-wrapper\" data-id=\"no_pet_yet\"><div class=\"col s2\"><i class=\"large material-icons prefix\">pets</i></div><div class=\"pet-detail col s8\"><h5 class=\"pet-title black-text\">No loving pets yet</h5><div class=\"pet-type\">Please submit your pet's details to get started</div></div><div class=\"col s2 right-align\">&nbsp;</div></div>";
 
   if (navigator.onLine) {
-    const firebasePets = await getPetsFromFirebase();
-    const tx = db.transaction("pets", "readwrite");
-    const store = tx.objectStore("pets");
-
+    const firebasePets = await getRecords('pets');
     for (const pet of firebasePets) {
-      await store.put({ ...pet, synced: true });
       displayPet(pet);
     }
-    await tx.done;
   } else {
-    const tx = db.transaction("pets", "readonly");
-    const store = tx.objectStore("pets");
-    const pets = await store.getAll();
+    const pets = await getIndexedDBRecords();
     pets.forEach((pet) => {
       displayPet(pet);
     });
-    await tx.done;
   }
 }
 
