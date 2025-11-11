@@ -16,6 +16,7 @@ export async function syncIndexedDBToFirebase() {
             record.synced = true;
             new_records.push(record.id);
             const newId = await addRecord('pets', record);
+            await updateIndexedDBRecord(record);
             record.id = 'firebase-' + newId;
           }
           record.synced = true;
