@@ -154,9 +154,13 @@ async function deletePet(pet) {
   }
   deleteRecord('pets',pet);
   deleteIndexedDBRecord(pet);
+  let total = 0;
   const remaining = await getRecords('pets');
-  notifyUser('Sad day... only ' + remaining.size + ' lovely pets remaining.');
-  if (pet=="Licorice")
+  for (const animal of remaining) {
+      total++;
+    }
+  notifyUser('Sad day... only ' + total + ' lovely pets remaining.');
+  if (total==0)
   {
       petContainer.innerHTML = "<div class=\"card-panel white row valign-wrapper\" data-id=\"no_pet_yet\"><div class=\"col s2\"><i class=\"large material-icons prefix\">pets</i></div><div class=\"pet-detail col s8\"><h5 class=\"pet-title black-text\">No loving pets yet</h5><div class=\"pet-type\">Please submit your pet's details to get started</div></div><div class=\"col s2 right-align\">&nbsp;</div></div>";
   }
