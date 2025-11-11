@@ -146,5 +146,11 @@ function displayPet(pet) {
 }
 
 function deletePet(pet) {
-  notifyUser('YOU ANIMAL!!! I won\'t delete the beloved pet ' + pet + ', got it? Now GO AWAY!');
+  const petContainer = document.querySelector(".petcoll");
+    // Check if the pet already exists in the UI and remove it
+  const existingPet = petContainer.querySelector(`[data-id="pet_${pet}"]`);
+  if (existingPet) {
+    existingPet.remove();
+  }
+  notifyUser('R.I.P. ' + pet + ', Are you happy? Now GO AWAY!');
 }
