@@ -18,6 +18,7 @@ export async function createRecord(data) {
     data.id = 'local-'+Math.floor(Math.random()*10000);
     await addIndexedDBRecord(data);
   }
+    loadPets();
   }
 
 
@@ -84,3 +85,68 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+export async function loadPets() {
+  const db = await getDB();
+  const petContainer = document.querySelector(".petcoll");
+  petContainer.innerHTML = "<div class=\"card-panel white row valign-wrapper\" data-id=\"no_pet_yet\"><div class=\"col s2\"><i class=\"large material-icons prefix\">pets</i></div><div class=\"pet-detail col s8\"><h5 class=\"pet-title black-text\">No loving pets yet</h5><div class=\"pet-type\">Please submit your pet's details to get started</div></div><div class=\"col s2 right-align\">&nbsp;</div></div>";
+
+  if (navigator.onLine) {
+    const firebasePets = await getPetsFromFirebase();
+    const tx = db.transaction("pets", "readwrite");
+    const store = tx.objectStore("pets");
+
+    for (const pet of firebasePets) {
+      await store.put({ ...pet, synced: true });
+      displayPet(pet);
+    }
+    await tx.done;
+  } else {
+    const tx = db.transaction("pets", "readonly");
+    const store = tx.objectStore("pets");
+    const pets = await store.getAll();
+    pets.forEach((pet) => {
+      displayPet(pet);
+    });
+    await tx.done;
+  }
+}
+
+function displayPet(pet) {
+  const petContainer = document.querySelector(".petcoll");
+
+  const emptypetnest = petContainer.querySelector(`[data-id="no_pet_yet"]`);
+  if (emptypetnest) {
+    emptypetnest.remove();
+  }
+
+  // Check if the pet already exists in the UI and remove it
+  const existingPet = petContainer.querySelector(`[data-id="pet_${pet.name}"]`);
+  if (existingPet) {
+    existingPet.remove();
+  }
+
+  // Create new pet HTML and add it to the container
+  const html = `
+    <div class="card-panel white row valign-wrapper" data-id="pet_${pet.name}">
+      <div class="col s2">
+        <i class="large material-icons prefix">pets</i>
+      </div>
+      <div class="pet-detail col s8">
+        <h5 class="pet-title black-text">${pet.name}</h5>
+        <div class="pet-type">${pet.type}</div>
+      </div>
+      <div class="col s2 right-align">
+        <button class="pet-delete btn-flat delete-action" aria-label="Delete pet">
+          <i class="large material-icons black-text-darken-1" style="font-size: 30px">delete_outline</i>
+        </button>
+      </div>
+    </div>
+  `;
+  petContainer.insertAdjacentHTML("beforeend", html);
+
+  const deleteButton = petContainer.querySelector(
+    `[data-id="pet_${pet.name}"] .pet-delete`
+  );
+  deleteButton.addEventListener("click", () => deletePet(pet.name));
+
+}

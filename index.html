@@ -162,22 +162,16 @@
       <div class="petcoll container text-darken-1">
         <h4 class="center-align">Pets by our fans</h4>
 
-        <div class="card-panel white row valign-wrapper">
+        <div class="card-panel white row valign-wrapper" data-id="no_pet_yet">
           <div class="col s2">
             <i class="large material-icons prefix">pets</i>
           </div>
           <div class="pet-detail col s8">
-            <h5 class="pet-title black-text">Licorice</h5>
-            <div class="pet-type">Good Boy</div>
+            <h5 class="pet-title black-text">No loving pets yet</h5>
+            <div class="pet-type">Please submit your pet's details to get started</div>
           </div>
           <div class="col s2 right-align">
-            <button class="pet-delete btn-flat delete-action" aria-label="Delete pet">
-              <i
-                class="large material-icons black-text-darken-1"
-                style="font-size: 30px"
-                >delete_outline</i
-              >
-            </button>
+            &nbsp;
           </div>
         </div>
 
@@ -247,6 +241,9 @@
     // Initialize sidenav normally
     var elems = document.querySelectorAll('.sidenav');
     M.Sidenav.init(elems, {edge: 'left', draggable: true});
+
+    //Load Pets by default
+    loadPets();
 
     // Highlight the active nav link
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
