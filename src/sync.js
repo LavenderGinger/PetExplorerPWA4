@@ -3,7 +3,6 @@ import { addRecord, getRecords, updateRecord } from './firebase.js';
 import { notifyUser } from './ui/notifications.js';
 
 export async function syncIndexedDBToFirebase() {
-  let new_records = [];
   const records = await getIndexedDBRecords();
   for (const record of records) {
     if (!record.synced) {
@@ -13,13 +12,9 @@ export async function syncIndexedDBToFirebase() {
             await updateRecord('pets', firebaseId, record);
           } else {
             record.synced = true;
-            new_records = refreshOnlineEntries();
-        if (!new_records.includes(record.id)) {
-            new_records.push(record.id);
             const newId = await addRecord('pets', record);
             await updateIndexedDBRecord(record);
             record.id = 'firebase-' + newId;
-          }
         }
           record.synced = true;
           await updateIndexedDBRecord(record);
@@ -28,20 +23,6 @@ export async function syncIndexedDBToFirebase() {
         notifyUser('Sync error: ' + error.message);
       }
     }
-  }
-}
-
-export async function refreshOnlineEntries() {
-  let new_records = [];
-  new_records.push('anchor');
-  try{
-  let onlineRecords = await getRecords('pets');
-  for (const record of onlineRecords) {
-    new_records.push(record.id);
-  }
-}
-  finally {
-     return new_records;
   }
 }
 
